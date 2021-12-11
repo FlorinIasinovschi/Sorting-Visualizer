@@ -17,8 +17,8 @@ body, html {
   width: 70vw;
 }
 
-.bars {
-  background-color: aqua;
+.arr-bar {
+  /* background-color: aqua; */
   margin: 0 2px;
   display: inline-block;
   width: 5px;
