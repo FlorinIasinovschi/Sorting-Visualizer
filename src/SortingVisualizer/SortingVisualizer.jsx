@@ -24,17 +24,13 @@ const ArrBar = styled.div`
 export default function SortingVisualizer({ actionType, btnToggle, sliderSizeValue, sliderSpeedValue }) {
 
   const [visualArr, setVisualArr] = useState([])
-  const [defaultColor, setDefaultColor] = useState('lightgrey')
+  const [defaultColor, setDefaultColor] = useState('aqua')
 
   useEffect(() => {
     initialArray();
 
   }, [sliderSizeValue]);
 
-  useEffect(() => {
-    console.log("changes")
-
-  }, [visualArr]);
 
   useEffect(() => {
     if (actionType === "new") {
@@ -43,6 +39,9 @@ export default function SortingVisualizer({ actionType, btnToggle, sliderSizeVal
     }
     if (actionType === "bubble") {
       sortingBubble()
+    }
+    if (actionType === "selection") {
+      selectionSort()
     }
 
   }, [btnToggle]);
@@ -95,30 +94,18 @@ export default function SortingVisualizer({ actionType, btnToggle, sliderSizeVal
     let cycleSteps = [];
     const arrBar = document.getElementsByClassName('arr-bar');
     for (let i = 0; i < arr.length; i++) {
-
       for (let j = 0; j < arr.length - i - 1; j++) {
-
         if (arr[j + 1] < arr[j]) {
-
           let temp = arr[j];
           arr[j] = arr[j + 1];
           arr[j + 1] = temp;
         }
-
         arrSteps.push(arr.slice());
         arrRedlineSteps.push(j + 1);
         defaultColorSteps.push(j);
-        //greenColorSteps.push(j);
-
       }
-      //at step n PUSH k to be green
       cycleSteps.push(arrSteps.length - 1);
-      //console.log(cycleSteps)
-
     }
-
-    console.log(cycleSteps.length);
-    console.log(cycleSteps);
 
     let count = 0;
     for (let i = 0; i < arrSteps.length; i++) {
@@ -127,19 +114,85 @@ export default function SortingVisualizer({ actionType, btnToggle, sliderSizeVal
         setVisualArr(arrSteps[i])
 
         arrBar[arrRedlineSteps[i]].style.backgroundColor = "red";
-        //arrBar[greenColorSteps[i]].style.backgroundColor = "lightgreen";
         arrBar[defaultColorSteps[i]].style.backgroundColor = "lightgrey";
         if (i === cycleSteps[count]) {
-          console.log("includes" + i)
           arrBar[arr.length - 1 - count].style.backgroundColor = "lightgreen";
           count++
         }
+        // MAKE LAST BAR GREEN
         if (i === arrSteps.length - 1) {
           arrBar[0].style.backgroundColor = "lightgreen";
 
         }
+      }, (100 - sliderSpeedValue) * i);
+    }
+  }
+
+  const selectionSort = () => {
+
+    const arr = visualArr.slice();
+    let arrSteps = [];
+    let arrRedlineSteps = [];
+    let defaultColorSteps = [];
+    let currentMinValue = [];
+    let currentMinSteps = [];
+    let cycleSteps = [];
+    const arrBar = document.getElementsByClassName('arr-bar');
+    for (let i = 0; i < arr.length; i++) {
+      let min = i
+      for (let j = 0; j < arr.length - 1 - i; j++) {
+        // j keeps growing on each cycle
+        if (arr[j + 1 + i] < arr[min]) {
+          min = j + 1 + i
+          //push the min value only when you find it
+          currentMinValue.push(min);
+          // push at which point of the steps you encounter a min value
+          currentMinSteps.push(arrSteps.length - 1)
+        }
+        arrSteps.push(arr.slice());
+        arrRedlineSteps.push(j + i + 1);
+        defaultColorSteps.push(j + i);
+      }
+      //AFTER ONE CYCLE
+      if (i !== min) {
+        let temp = arr[i]
+        arr[i] = arr[min]
+        arr[min] = temp
+      }
+      cycleSteps.push(arrSteps.length - 1);
 
 
+    }
+    console.log(arrSteps)
+    console.log(arr)
+
+    let cycleCount = 0;
+    let minStepsCount = 0;
+    for (let i = 0; i < arrSteps.length; i++) {
+      // eslint-disable-next-line no-loop-func
+      setTimeout(() => {
+        setVisualArr(arrSteps[i])
+
+        arrBar[arrRedlineSteps[i]].style.backgroundColor = "red";
+        arrBar[defaultColorSteps[i]].style.backgroundColor = "lightgrey";
+        //at the end of each j loop cycle
+        if (i === cycleSteps[cycleCount]) {
+          arrBar[cycleCount].style.backgroundColor = "lightgreen";
+          cycleCount++
+        }
+        //at the start of each step where you encounter a min value
+        if (i === currentMinSteps[minStepsCount]) {
+          console.log("min")
+          //red and grey overwrites it for the moment
+          arrBar[currentMinValue[minStepsCount]].style.backgroundColor = "blue";
+          minStepsCount++
+        }
+
+        // MAKE LAST BAR GREEN
+        if (i === arrSteps.length - 1) {
+          arrBar[arrBar.length - 1].style.backgroundColor = "lightgreen";
+
+        }
       }, (100 - sliderSpeedValue) * i);
     }
   }

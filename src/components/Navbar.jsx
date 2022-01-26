@@ -61,7 +61,7 @@ export default function Navbar(props) {
           <Title>
             Size
           </Title>
-          <Slider onChange={(e) => props.onSizeChange(e)} defaultValue={50} min={15} aria-label="Default" valueLabelDisplay="auto" />
+          <Slider onChange={(e) => props.onSizeChange(e)} defaultValue={50} min={15} max={100} aria-label="Default" valueLabelDisplay="auto" />
         </SliderContainer>
         <SliderContainer>
           <Title>
@@ -72,6 +72,7 @@ export default function Navbar(props) {
         <Btn onClick={() => window.location.reload()}>Stop And Reset</Btn>
         <Btn onClick={() => props.onBtnPress("new")}>Generate New Array</Btn>
         <Btn onClick={() => props.onBtnPress("bubble")}>Bubble Sort</Btn>
+        <Btn onClick={() => props.onBtnPress("selection")}>Selection Sort</Btn>
       </Container>
     </Wrapper>
 
